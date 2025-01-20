@@ -19,7 +19,7 @@ def calcul_resine(m_f, V_f, rho_f, rho_m):
     return m_resine * 1000  # conversion en g
 
 # Titre de l'application
-st.title("Calcul de l'épaisseur et de la résine nécessaire")
+st.title("Détermination de l'épaisseur")
 
 # Curseurs pour ajuster les paramètres
 largeur = st.slider("Largeur (mm)", 10, 500, 200)
