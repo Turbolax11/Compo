@@ -104,5 +104,5 @@ slider_rho_f.on_changed(update)
 slider_vf.on_changed(update)
 slider_rho_m.on_changed(update)
 
-plt.show()
+st.pyplot(fig)
 
