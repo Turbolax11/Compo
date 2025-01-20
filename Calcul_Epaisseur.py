@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, TextBox
+import streamlit as st
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Fonction pour calculer l'épaisseur
 def calcul_epaisseur(m_f, A, V_f, rho_f):
@@ -18,91 +18,38 @@ def calcul_resine(m_f, V_f, rho_f, rho_m):
     m_resine = V_resine * rho_m  # masse de résine en kg
     return m_resine * 1000  # conversion en g
 
-# Configuration initiale
-largeur_initial = 200  # en mm
-longueur_initial = 200  # en mm
-m_f_initial = 100  # Masse des fibres initiale en g
-V_f_initial = 0.6  # Taux volumique de fibres initial
-rho_f_initial = 1780  # Densité des fibres initiale en kg/m³
-rho_m_initial = 1200  # Densité de la résine initiale en kg/m³
+# Titre de l'application
+st.title("Calcul de l'épaisseur et de la résine nécessaire")
 
-# Données pour le tracé
+# Curseurs pour ajuster les paramètres
+largeur = st.slider("Largeur (mm)", 10, 500, 200)
+longueur = st.slider("Longueur (mm)", 10, 500, 200)
+m_f = st.slider("Masse fibres (g)", 10, 1000, 100)
+V_f = st.slider("Fraction volumique de fibres (V_f)", 0.3, 0.7, 0.6, step=0.01)
+rho_f = st.slider("Densité des fibres (kg/m³)", 1000, 2500, 1780)
+rho_m = st.slider("Densité de la matrice (kg/m³)", 800, 1500, 1200)
+
+# Calculs
+A = (largeur * longueur) / 1e6  # Surface en m²
+épaisseur = calcul_epaisseur(m_f / 1000, A, V_f, rho_f)
+masse_resine = calcul_resine(m_f / 1000, V_f, rho_f, rho_m)
+
+# Affichage des résultats
+st.write(f"### Épaisseur calculée : {épaisseur:.2f} mm")
+st.write(f"### Masse de résine nécessaire : {masse_resine:.2f} g")
+
+# Graphique interactif
 V_f_values = np.linspace(0.3, 0.7, 100)
+épaisseur_values = [calcul_epaisseur(m_f / 1000, A, vf, rho_f) for vf in V_f_values]
 
-# Création du graphique principal
-fig, ax = plt.subplots(figsize=(8, 6))
-plt.subplots_adjust(bottom=0.6)
+fig, ax = plt.subplots()
+ax.plot(V_f_values, épaisseur_values, label="Épaisseur (mm)")
+ax.scatter(V_f, épaisseur, color="red", label="Valeur actuelle")
+ax.set_xlabel("Fraction volumique de fibres (V_f)")
+ax.set_ylabel("Épaisseur (mm)")
+ax.set_title("Variation de l'épaisseur en fonction de V_f")
+ax.legend()
+ax.grid(True)
 
-A_initial = (largeur_initial * longueur_initial) / 1e6  # Surface en m²
-e_values = [calcul_epaisseur(m_f_initial / 1000, A_initial, V_f, rho_f_initial) for V_f in V_f_values]
-l, = plt.plot(V_f_values, e_values, label="Épaisseur (mm)")
-point, = plt.plot(V_f_initial, calcul_epaisseur(m_f_initial / 1000, A_initial, V_f_initial, rho_f_initial), 'ro', label="Valeur actuelle")
-text = ax.text(V_f_initial, calcul_epaisseur(m_f_initial / 1000, A_initial, V_f_initial, rho_f_initial) + 0.2, 
-               f"{calcul_epaisseur(m_f_initial / 1000, A_initial, V_f_initial, rho_f_initial):.2f} mm", color="red", fontsize=10)
-plt.xlabel("Fraction volumique de fibres (V_f)")
-plt.ylabel("Épaisseur (mm)")
-plt.title("Variation de l'épaisseur en fonction du taux de fibres")
-plt.ylim(0, 6)
-plt.legend()
-plt.grid(True)
-
-# Curseurs
-ax_largeur = plt.axes([0.2, 0.5, 0.65, 0.03], facecolor="lightgray")
-slider_largeur = Slider(ax_largeur, "Largeur (mm)", 10, 500, valinit=largeur_initial)
-
-ax_longueur = plt.axes([0.2, 0.45, 0.65, 0.03], facecolor="lightgray")
-slider_longueur = Slider(ax_longueur, "Longueur (mm)", 10, 500, valinit=longueur_initial)
-
-ax_m_f = plt.axes([0.2, 0.4, 0.65, 0.03], facecolor="lightgray")
-slider_m_f = Slider(ax_m_f, "Masse fibres (g)", 10, 1000, valinit=m_f_initial)
-
-ax_rho_f = plt.axes([0.2, 0.35, 0.65, 0.03], facecolor="lightgray")
-slider_rho_f = Slider(ax_rho_f, "Densité renfort (kg/m³)", 1000, 2500, valinit=rho_f_initial)
-
-ax_vf = plt.axes([0.2, 0.3, 0.65, 0.03], facecolor="lightgray")
-slider_vf = Slider(ax_vf, "Taux de fibres (V_f)", 0.3, 0.7, valinit=V_f_initial, valstep=0.01)
-
-# Curseur pour la densité de la matrice
-ax_rho_m = plt.axes([0.2, 0.25, 0.65, 0.03], facecolor="lightgray")
-slider_rho_m = Slider(ax_rho_m, "Densité matrice (kg/m³)", 800, 1500, valinit=rho_m_initial, valstep=1)
-
-# Zone pour afficher la masse de résine nécessaire
-ax_resine = plt.axes([0.2, 0.1, 0.65, 0.1], facecolor="white")
-text_resine = TextBox(ax_resine, "Masse résine nécessaire (g):", initial=f"{calcul_resine(m_f_initial / 1000, V_f_initial, rho_f_initial, rho_m_initial):.2f}")
-
-# Fonction de mise à jour
-def update(val):
-    largeur = slider_largeur.val
-    longueur = slider_longueur.val
-    m_f = slider_m_f.val
-    V_f = slider_vf.val
-    rho_f = slider_rho_f.val
-    rho_m = slider_rho_m.val
-    A = (largeur * longueur) / 1e6  # Surface en m²
-
-    # Recalculer les valeurs d'épaisseur
-    e_values = [calcul_epaisseur(m_f / 1000, A, vf, rho_f) for vf in V_f_values]
-    l.set_ydata(e_values)
-
-    # Mettre à jour le point rouge et le texte en fonction du curseur V_f
-    e_current = calcul_epaisseur(m_f / 1000, A, V_f, rho_f)
-    point.set_data([V_f], [e_current])
-    text.set_position((V_f, e_current + 0.2))
-    text.set_text(f"{e_current:.2f} mm")
-
-    # Mettre à jour la masse de résine nécessaire
-    m_resine = calcul_resine(m_f / 1000, V_f, rho_f, rho_m)
-    text_resine.set_val(f"{m_resine:.2f}")
-
-    fig.canvas.draw_idle()
-
-# Liaison des curseurs à la fonction
-slider_largeur.on_changed(update)
-slider_longueur.on_changed(update)
-slider_m_f.on_changed(update)
-slider_rho_f.on_changed(update)
-slider_vf.on_changed(update)
-slider_rho_m.on_changed(update)
-
+# Affichage du graphique
 st.pyplot(fig)
-
