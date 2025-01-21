@@ -26,7 +26,7 @@ largeur = st.slider("Largeur (mm)", 10, 1000, 200)
 longueur = st.slider("Longueur (mm)", 10, 1000, 200)
 m_f = st.slider("Masse fibres (g)", 10, 1000, 100)
 V_f = st.slider("Fraction volumique de fibres (V_f)", 0.3, 0.7, 0.6, step=0.01)
-rho_f = st.slider("Densité des fibres (kg/m³)", 1000, 2500, 1780)
+rho_f = st.slider("Densité des fibres (kg/m³)", 1000, 2600, 1780)
 rho_m = st.slider("Densité de la matrice (kg/m³)", 800, 1500, 1200)
 
 # Calculs
