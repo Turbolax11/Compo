@@ -22,8 +22,8 @@ def calcul_resine(m_f, V_f, rho_f, rho_m):
 st.title("Détermination de l'épaisseur")
 
 # Curseurs pour ajuster les paramètres
-largeur = st.slider("Largeur (mm)", 10, 500, 200)
-longueur = st.slider("Longueur (mm)", 10, 500, 200)
+largeur = st.slider("Largeur (mm)", 10, 1000, 200)
+longueur = st.slider("Longueur (mm)", 10, 1000, 200)
 m_f = st.slider("Masse fibres (g)", 10, 1000, 100)
 V_f = st.slider("Fraction volumique de fibres (V_f)", 0.3, 0.7, 0.6, step=0.01)
 rho_f = st.slider("Densité des fibres (kg/m³)", 1000, 2500, 1780)
