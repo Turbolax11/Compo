@@ -88,7 +88,7 @@ rho_f2 = st.slider("Densité des fibres (kg/m³)", 1000, 2600, 1800, key="rhof2"
 st.write(f"### Épaisseur calculée à partir du grammage : {épaisseur2:.2f} mm")
 
 # Graphique interactif pour la seconde méthode
-nb_plis_values = range(1, 21)
+nb_plis_values = range(1, 21)  # Nombre de plis de 1 à 20
 épaisseur_values2 = [calcul_epaisseur_inverse(grammage, n, rho_f2, V_f2) for n in nb_plis_values]
 
 fig2, ax2 = plt.subplots()
@@ -97,6 +97,8 @@ ax2.scatter(nb_plis, épaisseur2, color="red", label="Valeur actuelle")
 ax2.set_xlabel("Nombre de plis")
 ax2.set_ylabel("Épaisseur (mm)")
 ax2.set_title("Variation de l'épaisseur en fonction du nombre de plis")
+ax2.set_xticks(range(1, 21))  # Échelle des x avec des incréments de 1
+ax2.set_xlim(1, 20)  # Limite des x de 1 à 20
 ax2.legend()
 ax2.grid(True)
 
