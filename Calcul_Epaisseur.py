@@ -2,124 +2,125 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Fonction pour calculer l'épaisseur
-def calcul_epaisseur(m_f, A, V_f, rho_f):
-    V_fibres = m_f / rho_f  # volume des fibres en m³
-    V_total = V_fibres / V_f  # volume total en m³
+# Titre principal
+st.markdown("<h1 style='text-align: center; color: #6C63FF;'>Calcul d'épaisseur pour composites</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #6C63FF;'>Deux méthodes disponibles</p>", unsafe_allow_html=True)
+
+# Sélection de la méthode
+st.markdown("<h3 style='text-align: center;'>Choisissez une méthode</h3>", unsafe_allow_html=True)
+method = st.radio(
+    "Méthode de calcul :",
+    ("Méthode 1 : Basée sur la masse de fibres", "Méthode 2 : Basée sur le grammage et le nombre de plis"),
+    index=0,
+    horizontal=True
+)
+
+# Fonctions de calcul
+def calcul_epaisseur_masse(m_f, A, V_f, rho_f):
+    """Calcule l'épaisseur en fonction de la masse de fibres."""
+    V_fibres = m_f / rho_f  # volume des fibres (m³)
+    V_total = V_fibres / V_f  # volume total du composite (m³)
     e = V_total / A  # épaisseur en m
-    e_mm = e * 1000  # conversion en mm
-    return e_mm
+    return e * 1000  # conversion en mm
 
-# Fonction pour calculer la quantité de résine nécessaire
 def calcul_resine(m_f, V_f, rho_f, rho_m):
-    V_fibres = m_f / rho_f  # volume des fibres en m³
-    V_total = V_fibres / V_f  # volume total en m³
-    V_resine = V_total * (1 - V_f)  # volume de résine en m³
-    m_resine = V_resine * rho_m  # masse de résine en kg
-    return m_resine * 1000  # conversion en g
+    """Calcule la masse de résine nécessaire."""
+    V_fibres = m_f / rho_f  # volume des fibres (m³)
+    V_total = V_fibres / V_f  # volume total du composite (m³)
+    V_resine = V_total * (1 - V_f)  # volume de résine (m³)
+    return V_resine * rho_m * 1000  # conversion en g
 
-# Fonction pour calculer l'épaisseur à partir du grammage surfacique
 def calcul_epaisseur_inverse(grammage, nb_plis, rho_f, V_f):
-    """
-    Calcule l'épaisseur d'un composite à partir du grammage surfacique, du nombre de plis,
-    de la densité du renfort et du taux volumique des fibres.
-    """
-    # Conversion du grammage en masse de fibres par unité de surface (kg/m²)
-    grammage_kg_m2 = grammage / 1000  # Conversion g/m² en kg/m²
-
-    # Volume total du composite par unité de surface (m³/m²)
+    """Calcule l'épaisseur en fonction du grammage et du nombre de plis."""
+    grammage_kg_m2 = grammage / 1000  # g/m² -> kg/m²
     V_total_per_m2 = (grammage_kg_m2 * nb_plis) / (rho_f * V_f)
+    return V_total_per_m2 * 1000  # conversion en mm
 
-    # Épaisseur totale du composite (en mm)
-    e_mm = V_total_per_m2 * 1000  # Conversion m en mm
-    return e_mm
+# Méthode 1 : Basée sur la masse de fibres
+if method == "Méthode 1 : Basée sur la masse de fibres":
+    st.markdown("<h3 style='text-align: center;'>Paramètres de la méthode 1</h3>", unsafe_allow_html=True)
+    
+    # Entrée des dimensions
+    col1, col2 = st.columns(2)
+    with col1:
+        largeur = st.slider("Largeur (mm)", 10, 1000, 200)
+    with col2:
+        longueur = st.slider("Longueur (mm)", 10, 1000, 200)
 
-# Titre de l'application
-st.title("Détermination de l'épaisseur")
+    # Entrée des paramètres
+    m_f = st.slider("Masse de fibres (g)", 10, 1000, 100)
+    V_f = st.slider("Fraction volumique de fibres (V_f)", 0.3, 0.7, 0.6, step=0.01)
+    rho_f = st.slider("Densité des fibres (kg/m³)", 1000, 3000, 1780)
+    rho_m = st.slider("Densité de la matrice (kg/m³)", 800, 1500, 1200)
 
-# Curseurs pour la première méthode
-st.header("Méthode 1 : Épaisseur à partir de la masse de fibres")
-largeur = st.slider("Largeur (mm)", 10, 1000, 200, key="largeur1")
-longueur = st.slider("Longueur (mm)", 10, 1000, 200, key="longueur1")
-m_f = st.slider("Masse fibres (g)", 10, 1000, 100, key="mf1")
-V_f = st.slider("Fraction volumique de fibres (V_f)", 0.3, 0.7, 0.6, step=0.01, key="vf1")
-rho_f = st.slider("Densité des fibres (kg/m³)", 1000, 2600, 1780, key="rhof1")
-rho_m = st.slider("Densité de la matrice (kg/m³)", 800, 1500, 1200, key="rhom1")
+    # Calculs
+    A = (largeur * longueur) / 1e6  # Surface en m²
+    épaisseur = calcul_epaisseur_masse(m_f / 1000, A, V_f, rho_f)
+    masse_resine = calcul_resine(m_f / 1000, V_f, rho_f, rho_m)
 
-# Calculs pour la première méthode
-A = (largeur * longueur) / 1e6  # Surface en m²
-épaisseur1 = calcul_epaisseur(m_f / 1000, A, V_f, rho_f)
-masse_resine1 = calcul_resine(m_f / 1000, V_f, rho_f, rho_m)
+    # Affichage des résultats
+    st.markdown(f"<h3 style='text-align: center; color: #333;'>Épaisseur Calculée</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h1 style='text-align: center; color: #FF6B6B;'>{épaisseur:.2f} mm</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='text-align: center; color: #333;'>Masse de résine nécessaire</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h1 style='text-align: center; color: #6C63FF;'>{masse_resine:.2f} g</h1>", unsafe_allow_html=True)
 
-# Affichage des résultats de la première méthode
-st.write(f"### Épaisseur calculée : {épaisseur1:.2f} mm")
-st.write(f"### Masse de résine nécessaire : {masse_resine1:.2f} g")
+    # Graphique
+    st.markdown("<h3 style='text-align: center;'>Variation de l'épaisseur</h3>", unsafe_allow_html=True)
+    V_f_values = np.linspace(0.3, 0.7, 100)
+    épaisseur_values = [calcul_epaisseur_masse(m_f / 1000, A, vf, rho_f) for vf in V_f_values]
 
-# Graphique interactif pour la première méthode
-V_f_values = np.linspace(0.3, 0.7, 100)
-épaisseur_values = [calcul_epaisseur(m_f / 1000, A, vf, rho_f) for vf in V_f_values]
+    fig, ax = plt.subplots()
+    ax.plot(V_f_values, épaisseur_values, label="Épaisseur (mm)", color="#6C63FF", linewidth=2)
+    ax.scatter(V_f, épaisseur, color="#FF6B6B", label="Valeur actuelle", zorder=5)
+    ax.set_xlabel("Fraction volumique de fibres (V_f)")
+    ax.set_ylabel("Épaisseur (mm)")
+    ax.set_title("Variation de l'épaisseur en fonction de V_f")
+    ax.legend()
+    ax.grid(True)
+    st.pyplot(fig)
 
-fig1, ax1 = plt.subplots()
-ax1.plot(V_f_values, épaisseur_values, label="Épaisseur (mm)")
-ax1.scatter(V_f, épaisseur1, color="red", label="Valeur actuelle")
-ax1.set_xlabel("Fraction volumique de fibres (V_f)")
-ax1.set_ylabel("Épaisseur (mm)")
-ax1.set_title("Variation de l'épaisseur en fonction de V_f")
-ax1.legend()
-ax1.grid(True)
+# Méthode 2 : Basée sur le grammage et le nombre de plis
+elif method == "Méthode 2 : Basée sur le grammage et le nombre de plis":
+    st.markdown("<h3 style='text-align: center;'>Paramètres de la méthode 2</h3>", unsafe_allow_html=True)
+    
+    # Choix du matériau et ajustement de la densité
+    col1, col2 = st.columns(2)
+    with col1:
+        material = st.radio("Choix du matériau :", ("Fibre de Carbone", "Fibre de Verre"), index=0)
+    with col2:
+        if material == "Fibre de Carbone":
+            default_density = 1780
+        else:
+            default_density = 2540
+        rho_f = st.slider("Densité du renfort (kg/m³)", 1000, 3000, default_density)
 
-# Affichage du graphique
-st.pyplot(fig1)
+    # Entrée des paramètres
+    grammage = st.slider("Grammage surfacique (g/m²)", 100, 2000, 300)
+    nb_plis = st.number_input("Nombre de plis", min_value=1, max_value=20, value=5, step=1, format="%d")
+    V_f = st.slider("Fraction volumique de fibres (V_f)", 0.3, 0.7, 0.6, step=0.01)
 
-# Séparation visuelle
-st.write("---")
+    # Calcul
+    épaisseur = calcul_epaisseur_inverse(grammage, nb_plis, rho_f, V_f)
 
-# Curseurs pour la seconde méthode
-st.header("Méthode 2 : Épaisseur à partir du grammage surfacique")
-grammage = st.slider("Grammage surfacique (g/m²)", 100, 2000, 300, key="grammage2")
-nb_plis = st.slider("Nombre de plis", 1, 20, 5, key="nbplis2")
-V_f2 = st.slider("Fraction volumique de fibres (V_f)", 0.3, 0.7, 0.6, step=0.01, key="vf2")
-rho_f2 = st.slider("Densité des fibres (kg/m³)", 1000, 2600, 1780, key="rhof2")
+    # Affichage des résultats
+    st.markdown(f"<h3 style='text-align: center; color: #333;'>Épaisseur Calculée</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h1 style='text-align: center; color: #FF6B6B;'>{épaisseur:.2f} mm</h1>", unsafe_allow_html=True)
 
-# Calculs pour la seconde méthode
-épaisseur2 = calcul_epaisseur_inverse(grammage, nb_plis, rho_f2, V_f2)
+    # Graphique
+    st.markdown("<h3 style='text-align: center;'>Variation de l'épaisseur</h3>", unsafe_allow_html=True)
+    nb_plis_values = range(1, nb_plis + 5)
+    épaisseur_values = [calcul_epaisseur_inverse(grammage, n, rho_f, V_f) for n in nb_plis_values]
 
-# Graphique interactif pour la seconde méthode
-nb_plis_values = range(1, nb_plis + 5)  # Ajuste dynamiquement la plage des plis (+4 plis supplémentaires)
-épaisseur_values2 = [calcul_epaisseur_inverse(grammage, n, rho_f2, V_f2) for n in nb_plis_values]
+    fig, ax = plt.subplots()
+    ax.plot(nb_plis_values, épaisseur_values, label="Épaisseur (mm)", color="#6C63FF", linewidth=2)
 
-fig2, ax2 = plt.subplots()
+    # Affichage du point rouge si la densité est inchangée
+    if rho_f == default_density:
+        ax.scatter(nb_plis, épaisseur, color="#FF6B6B", label="Valeur actuelle", zorder=5)
 
-# Tracé des valeurs de l'épaisseur (sans les points bleus)
-ax2.plot(nb_plis_values, épaisseur_values2, label="Épaisseur (mm)", color="blue")
-
-# Point rouge pour la valeur actuelle
-ax2.scatter(nb_plis, épaisseur2, color="red", label="Valeur actuelle", zorder=5)
-
-# Configuration des axes
-ax2.set_xlabel("Nombre de plis")
-ax2.set_ylabel("Épaisseur (mm)")
-ax2.set_title("Variation de l'épaisseur en fonction du nombre de plis")
-
-# Échelle dynamique pour les abscisses (ajout de 4 plis supplémentaires)
-ax2.set_xticks(range(1, nb_plis + 5))  # Ticks de 1 au max + 4
-ax2.set_xlim(1, nb_plis + 4)  # Limite dynamique de l'axe x
-
-# Échelle des ordonnées : valeurs régulières 0, 0.5, 1, 1.5, ...
-min_y = 0  # Forcer à commencer à 0
-max_y = max(épaisseur_values2)
-step = 0.5  # Pas fixe de 0.5
-y_ticks = np.arange(min_y, max_y + step, step)
-ax2.set_yticks(y_ticks)
-ax2.set_ylim(min_y, max_y + step)  # Ajout d'une marge en haut
-
-# Ajout de la légende et de la grille
-ax2.legend()
-ax2.grid(True)
-
-# Affichage du texte de l'épaisseur au-dessus du graphique
-st.write(f"### Épaisseur calculée pour {nb_plis} plis : {épaisseur2:.2f} mm")
-
-# Affichage du graphique pour la seconde méthode
-st.pyplot(fig2)
-
+    ax.set_xlabel("Nombre de plis")
+    ax.set_ylabel("Épaisseur (mm)")
+    ax.set_title("Variation de l'épaisseur en fonction du nombre de plis")
+    ax.legend()
+    ax.grid(True)
+    st.pyplot(fig)
