@@ -105,13 +105,13 @@ ax2.set_title("Variation de l'épaisseur en fonction du nombre de plis")
 ax2.set_xticks(range(1, nb_plis + 5))  # Ticks de 1 au max + 4
 ax2.set_xlim(1, nb_plis + 4)  # Limite dynamique de l'axe x
 
-# Échelle dynamique pour les ordonnées avec des valeurs intermédiaires
-min_y = min(épaisseur_values2)
+# Échelle des ordonnées : valeurs régulières 0, 0.5, 1, 1.5, ...
+min_y = 0  # Forcer à commencer à 0
 max_y = max(épaisseur_values2)
-step = 0.5 if max_y - min_y > 1 else 0.25  # Pas de 0.5 ou 0.25 selon l'écart
-y_ticks = np.arange(round(min_y, 1), round(max_y + step, 1), step)
+step = 0.5  # Pas fixe de 0.5
+y_ticks = np.arange(min_y, max_y + step, step)
 ax2.set_yticks(y_ticks)
-ax2.set_ylim(min_y - step, max_y + step)  # Ajoute une marge pour une meilleure visibilité
+ax2.set_ylim(min_y, max_y + step)  # Ajout d'une marge en haut
 
 # Ajout de la légende et de la grille
 ax2.legend()
