@@ -105,20 +105,21 @@ ax2.set_title("Variation de l'épaisseur en fonction du nombre de plis")
 ax2.set_xticks(range(1, nb_plis + 5))  # Ticks de 1 au max + 4
 ax2.set_xlim(1, nb_plis + 4)  # Limite dynamique de l'axe x
 
-# Échelle dynamique pour les ordonnées
+# Échelle dynamique pour les ordonnées avec des valeurs intermédiaires
 min_y = min(épaisseur_values2)
 max_y = max(épaisseur_values2)
-ax2.set_ylim(min_y - 1, max_y + 1)  # Ajoute une marge pour une meilleure visibilité
-y_ticks = np.linspace(min_y, max_y, num=5)  # 5 graduations intermédiaires sur l'axe y
+step = 0.5 if max_y - min_y > 1 else 0.25  # Pas de 0.5 ou 0.25 selon l'écart
+y_ticks = np.arange(round(min_y, 1), round(max_y + step, 1), step)
 ax2.set_yticks(y_ticks)
+ax2.set_ylim(min_y - step, max_y + step)  # Ajoute une marge pour une meilleure visibilité
 
 # Ajout de la légende et de la grille
 ax2.legend()
 ax2.grid(True)
 
+# Affichage du texte de l'épaisseur au-dessus du graphique
+st.write(f"### Épaisseur calculée pour {nb_plis} plis : {épaisseur2:.2f} mm")
+
 # Affichage du graphique pour la seconde méthode
 st.pyplot(fig2)
-
-# Afficher la valeur de l'épaisseur sur une ligne distincte
-st.write(f"### Épaisseur calculée pour {nb_plis} plis : {épaisseur2:.2f} mm")
 
