@@ -85,14 +85,15 @@ rho_f2 = st.slider("Densité des fibres (kg/m³)", 1000, 2600, 1800, key="rhof2"
 épaisseur2 = calcul_epaisseur_inverse(grammage, nb_plis, rho_f2, V_f2)
 
 # Graphique interactif pour la seconde méthode
-# `nb_plis_values` dépend de la valeur sélectionnée dans le curseur Streamlit
-nb_plis_values = range(1, nb_plis + 1)  # Ajuste dynamiquement la plage des plis
+nb_plis_values = range(1, nb_plis + 5)  # Ajuste dynamiquement la plage des plis (+4 plis supplémentaires)
 épaisseur_values2 = [calcul_epaisseur_inverse(grammage, n, rho_f2, V_f2) for n in nb_plis_values]
 
 fig2, ax2 = plt.subplots()
 
-# Tracé des valeurs de l'épaisseur
-ax2.plot(nb_plis_values, épaisseur_values2, label="Épaisseur (mm)", marker="o")
+# Tracé des valeurs de l'épaisseur (sans les points bleus)
+ax2.plot(nb_plis_values, épaisseur_values2, label="Épaisseur (mm)", color="blue")
+
+# Point rouge pour la valeur actuelle
 ax2.scatter(nb_plis, épaisseur2, color="red", label="Valeur actuelle", zorder=5)
 
 # Configuration des axes
@@ -100,9 +101,9 @@ ax2.set_xlabel("Nombre de plis")
 ax2.set_ylabel("Épaisseur (mm)")
 ax2.set_title("Variation de l'épaisseur en fonction du nombre de plis")
 
-# Échelle dynamique pour les abscisses (plis)
-ax2.set_xticks(nb_plis_values)  # Ticks pour chaque pli
-ax2.set_xlim(1, max(nb_plis_values))  # Limite dynamique de l'axe x
+# Échelle dynamique pour les abscisses (ajout de 4 plis supplémentaires)
+ax2.set_xticks(range(1, nb_plis + 5))  # Ticks de 1 au max + 4
+ax2.set_xlim(1, nb_plis + 4)  # Limite dynamique de l'axe x
 
 # Échelle dynamique pour les ordonnées
 min_y = min(épaisseur_values2)
@@ -117,4 +118,7 @@ ax2.grid(True)
 
 # Affichage du graphique pour la seconde méthode
 st.pyplot(fig2)
+
+# Afficher la valeur de l'épaisseur sur une ligne distincte
+st.write(f"### Épaisseur calculée pour {nb_plis} plis : {épaisseur2:.2f} mm")
 
