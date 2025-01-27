@@ -74,30 +74,33 @@ st.pyplot(fig1)
 # Séparation visuelle
 st.write("---")
 
-# Curseurs pour la seconde méthode
-st.header("Méthode 2 : Épaisseur à partir du grammage surfacique")
-grammage = st.slider("Grammage surfacique (g/m²)", 100, 2000, 300, key="grammage2")
-nb_plis = st.slider("Nombre de plis", 1, 20, 5, key="nbplis2")
-V_f2 = st.slider("Fraction volumique de fibres (V_f)", 0.3, 0.7, 0.6, step=0.01, key="vf2")
-rho_f2 = st.slider("Densité des fibres (kg/m³)", 1000, 2600, 1800, key="rhof2")
-
-# Calculs pour la seconde méthode
-épaisseur2 = calcul_epaisseur_inverse(grammage, nb_plis, rho_f2, V_f2)
-
 # Graphique interactif pour la seconde méthode
-nb_plis_values = list(range(1, nb_plis + 1))  # Ajuste dynamiquement la plage des plis
+nb_plis_values = range(1, nb_plis + 1)  # Ajuste dynamiquement la plage des plis
 épaisseur_values2 = [calcul_epaisseur_inverse(grammage, n, rho_f2, V_f2) for n in nb_plis_values]
 
 fig2, ax2 = plt.subplots()
+
+# Tracé des valeurs de l'épaisseur
 ax2.plot(nb_plis_values, épaisseur_values2, label="Épaisseur (mm)", marker="o")
 ax2.scatter(nb_plis, épaisseur2, color="red", label="Valeur actuelle", zorder=5)
+
+# Configuration des axes
 ax2.set_xlabel("Nombre de plis")
 ax2.set_ylabel("Épaisseur (mm)")
 ax2.set_title("Variation de l'épaisseur en fonction du nombre de plis")
 
-# Ajustement automatique de l'échelle des x
+# Échelle dynamique pour les abscisses (plis)
 ax2.set_xticks(nb_plis_values)  # Ticks pour chaque pli
-ax2.set_xlim(1, max(nb_plis_values))  # Limite de l'axe x ajustée au nombre de plis maximum
+ax2.set_xlim(1, max(nb_plis_values))  # Limite dynamique de l'axe x
+
+# Échelle dynamique pour les ordonnées
+min_y = min(épaisseur_values2)
+max_y = max(épaisseur_values2)
+ax2.set_ylim(min_y - 1, max_y + 1)  # Ajoute une marge pour une meilleure visibilité
+y_ticks = np.linspace(min_y, max_y, num=5)  # 5 graduations intermédiaires sur l'axe y
+ax2.set_yticks(y_ticks)
+
+# Ajout de la légende et de la grille
 ax2.legend()
 ax2.grid(True)
 
