@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-matplotlib.use('Agg')
 
 # Titre principal
 st.markdown("<h1 style='text-align: center; color: #6C63FF;'>Calcul d'épaisseur pour composites</h1>", unsafe_allow_html=True)
