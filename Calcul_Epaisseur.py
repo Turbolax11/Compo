@@ -1,13 +1,6 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-import subprocess
-import sys
-
-try:
-    import distutils
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "setuptools"])
 
 # Titre principal
 st.markdown("<h1 style='text-align: center; color: #6C63FF;'>Calcul d'épaisseur pour composites</h1>", unsafe_allow_html=True)
