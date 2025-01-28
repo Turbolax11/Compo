@@ -1,6 +1,4 @@
 import distutils
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "setuptools"])
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
