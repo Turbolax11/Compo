@@ -4,10 +4,8 @@ import matplotlib.pyplot as plt
 
 # Titre principal
 st.markdown("<h1 style='text-align: center; color: #6C63FF;'>Calcul d'épaisseur pour composites</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #6C63FF;'>Deux méthodes disponibles</p>", unsafe_allow_html=True)
 
 # Sélection de la méthode
-st.markdown("<h3 style='text-align: center;'>Choisissez une méthode</h3>", unsafe_allow_html=True)
 method = st.radio(
     "Méthode de calcul :",
     ("Méthode 1 : Basée sur la masse de fibres", "Méthode 2 : Basée sur le grammage et le nombre de plis"),
@@ -40,23 +38,24 @@ def calcul_epaisseur_inverse(grammage, nb_plis, rho_f, V_f):
 if method == "Méthode 1 : Basée sur la masse de fibres":
     st.markdown("<h3 style='text-align: center;'>Paramètres de la méthode 1</h3>", unsafe_allow_html=True)
 
-    # Sélection du matériau
-    col1, col2 = st.columns(2)
+     # Sélection du matériau
+    col1, col2, col3 = st.columns(3)
+
     with col1:
-        material = st.radio("Choix du matériau :", ("Fibre de Carbone", "Fibre de Verre", "Autre"), index=0)
+        carbone_selected = st.button("Carbone (1780 kg/m³)", key="carbone_m2")
     with col2:
-        if material == "Fibre de Carbone":
-            default_density = 1780
-        elif material == "Fibre de Verre":
-            default_density = 2540
-        else:
-            default_density = 1780  # Valeur par défaut pour "Autre"
+        verre_selected = st.button("Verre (2540 kg/m³)", key="verre_m2")
+    with col3:
+        custom_density = st.number_input("Saisir une densité (kg/m³):", min_value=1000, max_value=3000, value=1780, key="custom_density_m2")
 
-        rho_f = st.slider("Densité du renfort (kg/m³)", 1000, 3000, default_density)
+    if carbone_selected:
+        rho_f = 1780
+    elif verre_selected:
+        rho_f = 2540
+    else:
+        rho_f = custom_density
 
-    # Activation de la case "Autre" si la densité est modifiée
-    if material != "Autre" and rho_f != default_density:
-        material = "Autre"
+    rho_f = st.slider("Densité (kg/m³):", min_value=1000, max_value=3000, value=int(rho_f), key="density_slider_m2")
 
     # Paramètres principaux
     col1, col2 = st.columns(2)
@@ -99,22 +98,24 @@ elif method == "Méthode 2 : Basée sur le grammage et le nombre de plis":
     st.markdown("<h3 style='text-align: center;'>Paramètres de la méthode 2</h3>", unsafe_allow_html=True)
 
     # Sélection du matériau
-    col1, col2 = st.columns(2)
+  # Sélection du matériau
+    col1, col2, col3 = st.columns(3)
+
     with col1:
-        material = st.radio("Choix du matériau :", ("Fibre de Carbone", "Fibre de Verre", "Autre"), index=0)
+        carbone_selected = st.button("Carbone (1780 kg/m³)", key="carbone_m2")
     with col2:
-        if material == "Fibre de Carbone":
-            default_density = 1780
-        elif material == "Fibre de Verre":
-            default_density = 2540
-        else:
-            default_density = 1780  # Valeur par défaut pour "Autre"
+        verre_selected = st.button("Verre (2540 kg/m³)", key="verre_m2")
+    with col3:
+        custom_density = st.number_input("Saisir une densité (kg/m³):", min_value=1000, max_value=3000, value=1780, key="custom_density_m2")
 
-        rho_f = st.slider("Densité du renfort (kg/m³)", 1000, 3000, default_density)
+    if carbone_selected:
+        rho_f = 1780
+    elif verre_selected:
+        rho_f = 2540
+    else:
+        rho_f = custom_density
 
-    # Activation de la case "Autre" si la densité est modifiée
-    if material != "Autre" and rho_f != default_density:
-        material = "Autre"
+    rho_f = st.slider("Densité (kg/m³):", min_value=1000, max_value=3000, value=int(rho_f), key="density_slider_m2")
 
     # Paramètres principaux
     grammage = st.slider("Grammage surfacique (g/m²)", 100, 2000, 300)
