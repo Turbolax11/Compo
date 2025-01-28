@@ -64,7 +64,7 @@ if method == "Méthode 1 : Basée sur la masse de fibres":
     with col2:
         longueur = st.slider("Longueur (mm)", 10, 1000, 200)
 
-    m_f = st.slider("Masse de fibres (g)", 10, 1000, 100)
+    m_f = st.slider("Masse de fibres (g)", 10, 2000, 100)
     V_f = st.slider("Fraction volumique de fibres (V_f)", 0.3, 0.7, 0.6, step=0.01)
     rho_m = st.slider("Densité de la matrice (kg/m³)", 800, 1500, 1200)
 
